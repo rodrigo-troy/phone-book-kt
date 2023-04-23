@@ -6,7 +6,6 @@ import kotlin.math.min
 import kotlin.math.sqrt
 import kotlin.system.measureTimeMillis
 
-
 fun main() {
     val currentDir = System.getProperty("user.dir")
     val contactsFile = File("$currentDir/directory.txt")
