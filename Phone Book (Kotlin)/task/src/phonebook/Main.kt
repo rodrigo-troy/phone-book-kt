@@ -57,43 +57,43 @@ private fun jumpSearch(contactsFile: File, namesFile: File, maxTimeMillis: Long)
         unsortedLines = readContactsFromFile(contactsFile)
     }
 
-    val sortResult: SortResult
-    val sortTimeMillis = measureTimeMillis {
-        sortResult = bubbleSort(unsortedLines, maxTimeMillis)
-    }
-
     val names: List<String>
     val readNamesTimeMillis = measureTimeMillis {
         names = namesFile.readLines()
     }
 
+    val sortResult: SortResult = bubbleSort(unsortedLines, maxTimeMillis)
+
     if (!sortResult.isSorted) {
         val linearSearchResult = linearSearch(sortResult.sortedLines, names)
 
         val elapsedTimeMillis =
-            readContactsTimeMillis + sortTimeMillis + readNamesTimeMillis + linearSearchResult.elapsedTimeMillis
+            readContactsTimeMillis + sortResult.elapsedTimeMillis + readNamesTimeMillis + linearSearchResult.elapsedTimeMillis
         val seconds = elapsedTimeMillis / 1000
         val minutes = seconds / 60
         val millis = elapsedTimeMillis % 1000
 
         println("Found ${linearSearchResult.contacts.size} / ${namesFile.readLines().size} entries. Time taken: $minutes min. $seconds sec. $millis ms.")
-        println("Sorting time: ${sortResult.elapsedTime()}")
-        println("Searching time: ${linearSearchResult.elapsedTime()}")
+        println("Sorting time: ${sortResult.elapsedTime()}. - STOPPED, moved to linear search")
+        println("Searching time: ${linearSearchResult.elapsedTime()}.")
         return
     }
 
 
-    val jumpSearchResults: List<Contact>
+    val jumpSearchResults: SearchResult
     val jumpTimeMillis = measureTimeMillis {
         jumpSearchResults = jumpSearch(names, sortResult.sortedLines)
     }
 
-    val elapsedTimeMillis = readContactsTimeMillis + sortTimeMillis + readNamesTimeMillis + jumpTimeMillis
+    val elapsedTimeMillis = readContactsTimeMillis + sortResult.elapsedTimeMillis + readNamesTimeMillis + jumpTimeMillis
     val seconds = elapsedTimeMillis / 1000
     val minutes = seconds / 60
     val millis = elapsedTimeMillis % 1000
 
-    println("Found ${jumpSearchResults.size} / ${names.size} entries. Time taken: $minutes min. $seconds sec. $millis ms.")
+    println("Found ${jumpSearchResults.contacts.size} / ${names.size} entries. Time taken: $minutes min. $seconds sec. $millis ms.")
+    println("Sorting time: ${sortResult.elapsedTime()}.")
+    println("Searching time: ${jumpSearchResults.elapsedTime()}.")
+
 }
 
 fun readContactsFromFile(file: File): List<Contact> {
@@ -134,17 +134,19 @@ fun bubbleSort(list: List<Contact>, maxTimeMillis: Long): SortResult {
     return SortResult(sortedList, currentTimeMillis, true)
 }
 
-fun jumpSearch(names: List<String>, contacts: List<Contact>): List<Contact> {
+fun jumpSearch(names: List<String>, contacts: List<Contact>): SearchResult {
     val found = mutableListOf<Contact>()
 
-    names.forEach { name ->
-        val index = jumpSearchIndex(name, contacts)
-        if (index != -1) {
-            found.add(contacts[index])
+    val timeMillis = measureTimeMillis {
+        names.forEach { name ->
+            val index = jumpSearchIndex(name, contacts)
+            if (index != -1) {
+                found.add(contacts[index])
+            }
         }
     }
 
-    return found
+    return SearchResult(found, timeMillis)
 }
 
 fun jumpSearchIndex(target: String, contacts: List<Contact>): Int {
