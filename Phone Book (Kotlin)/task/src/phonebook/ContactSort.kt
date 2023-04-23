@@ -51,6 +51,10 @@ class ContactSort {
 
         currentTimeMillis += sortTimeMillis
 
+        if (currentTimeMillis > maxTimeMillis) {
+            return SortResult(sortedList, currentTimeMillis, false)
+        }
+
         return SortResult(sortedList, currentTimeMillis, true)
     }
 
