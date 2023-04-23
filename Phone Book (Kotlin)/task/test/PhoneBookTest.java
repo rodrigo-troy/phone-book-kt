@@ -11,8 +11,6 @@ import java.util.regex.Pattern;
 public class PhoneBookTest extends StageTest {
 
     private long timeOnTestStart;
-    private String timeRegex = "(\\d+)\\s*min.*?(\\d+)\\s*sec.*?(\\d+)\\s*ms";
-    private Pattern timeRegexPattern = Pattern.compile(timeRegex);
 
     @Override
     public List<TestCase> generate() {
@@ -40,6 +38,9 @@ public class PhoneBookTest extends StageTest {
         }
         return groups;
     }
+
+    private String timeRegex = "(\\d+)\\s*min.*?(\\d+)\\s*sec.*?(\\d+)\\s*ms";
+    private Pattern timeRegexPattern = Pattern.compile(timeRegex);
 
     private long parseTimestamp(String timestamp) {
         Matcher matcher = timeRegexPattern.matcher(timestamp);
