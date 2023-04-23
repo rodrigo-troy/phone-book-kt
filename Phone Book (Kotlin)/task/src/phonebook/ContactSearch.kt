@@ -25,7 +25,9 @@ class ContactSearch {
             }
         }
 
-        return SearchResult(linearSearchResults.filterNotNull(), elapsedTimeMillis)
+        val searchResult = SearchResult(linearSearchResults.filterNotNull(), elapsedTimeMillis)
+
+        return searchResult
     }
 
     fun jump(unsortedContacts: List<Contact>, names: List<String>, maxTimeMillis: Long) {
@@ -95,6 +97,31 @@ class ContactSearch {
         println("Found ${binarySearchResults.contacts.size} / ${names.size} entries. Time taken: $minutes min. $seconds sec. $millis ms.")
         println("Sorting time: ${sortResult.elapsedTime()}.")
         println("Searching time: ${binarySearchResults.elapsedTime()}.")
+    }
+
+    fun hash(unsortedContacts: List<Contact>, names: List<String>) {
+        println("Start searching (hash table)...")
+
+        val hashTable: HashMap<String, Contact>
+        val hashCreateTimeMillis = measureTimeMillis {
+            hashTable = hashCreate(unsortedContacts)
+        }
+
+        val createElapsedTimeMillis = hashCreateTimeMillis
+        val createSeconds = createElapsedTimeMillis / 1000
+        val createMinutes = createSeconds / 60
+        val createMillis = createElapsedTimeMillis % 1000
+
+        val hashSearchResults: SearchResult = hash(names, hashTable)
+
+        val totalElapsedTimeMillis = hashCreateTimeMillis + hashSearchResults.elapsedTimeMillis
+        val totalSeconds = totalElapsedTimeMillis / 1000
+        val totalMinutes = totalSeconds / 60
+        val totalMillis = totalElapsedTimeMillis % 1000
+
+        println("Found ${hashSearchResults.contacts.size} / ${names.size} entries. Time taken: $totalMinutes min. $totalSeconds sec. $totalMillis ms.")
+        println("Creating time: $createMinutes min. $createSeconds sec. $createMillis ms..")
+        println("Searching time: ${hashSearchResults.elapsedTime()}.")
     }
 
     private fun binary(names: List<String>, contacts: List<Contact>): SearchResult {
@@ -170,5 +197,27 @@ class ContactSearch {
         }
 
         return if (contacts[prev].name == target) prev else -1
+    }
+
+    private fun hashCreate(unsortedContacts: List<Contact>): HashMap<String, Contact> {
+        val hashTable = HashMap<String, Contact>()
+        unsortedContacts.forEach { contact ->
+            hashTable[contact.name] = contact
+        }
+        return hashTable
+    }
+
+    private fun hash(names: List<String>, hashTable: HashMap<String, Contact>): SearchResult {
+        val found = mutableListOf<Contact>()
+
+        val timeMillis = measureTimeMillis {
+            names.forEach { name ->
+                if (hashTable.containsKey(name)) {
+                    found.add(hashTable[name]!!)
+                }
+            }
+        }
+
+        return SearchResult(found, timeMillis)
     }
 }

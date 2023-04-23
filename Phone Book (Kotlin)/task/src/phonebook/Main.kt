@@ -9,16 +9,17 @@ fun main() {
 
     val unsortedContacts: List<Contact> = readContactsFromFile(contactsFile)
     val names: List<String> = namesFile.readLines()
-
     val contactSearch = ContactSearch()
 
     println("Start searching (linear search)...")
     val linearSearchResult = contactSearch.linear(unsortedContacts, names)
-    println("Found ${linearSearchResult.contacts.size} / ${namesFile.readLines().size} entries. Time taken: ${linearSearchResult.elapsedTime()}.")
+    println("Found ${linearSearchResult.contacts.size} / ${names.size} entries. Time taken: ${linearSearchResult.elapsedTime()}.")
     println()
     contactSearch.jump(unsortedContacts, names, linearSearchResult.elapsedTimeMillis * 10)
     println()
     contactSearch.binary(unsortedContacts, names, linearSearchResult.elapsedTimeMillis * 10)
+    println()
+    contactSearch.hash(unsortedContacts, names)
 }
 
 fun readContactsFromFile(file: File): List<Contact> {
