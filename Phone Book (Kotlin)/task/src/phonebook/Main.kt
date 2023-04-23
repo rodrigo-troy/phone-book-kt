@@ -19,7 +19,7 @@ fun main() {
     jumpSearch(contactsFile, namesFile, linearSearchResult.elapsedTimeMillis * 10)
 }
 
-private fun linearSearch(contacts: List<Contact>, names: List<String>): LinearResult {
+private fun linearSearch(contacts: List<Contact>, names: List<String>): SearchResult {
     val linearSearchResults: List<Contact?>
     val elapsedTimeMillis = measureTimeMillis {
         val unsortedLines: List<Contact> = contacts
@@ -29,10 +29,10 @@ private fun linearSearch(contacts: List<Contact>, names: List<String>): LinearRe
         }
     }
 
-    return LinearResult(linearSearchResults.filterNotNull(), elapsedTimeMillis)
+    return SearchResult(linearSearchResults.filterNotNull(), elapsedTimeMillis)
 }
 
-private fun linearSearch(contactsFile: File, namesFile: File): LinearResult {
+private fun linearSearch(contactsFile: File, namesFile: File): SearchResult {
     val unsortedLines: List<Contact>
     val readContactsTimeMillis = measureTimeMillis {
         unsortedLines = readContactsFromFile(contactsFile)
@@ -46,7 +46,7 @@ private fun linearSearch(contactsFile: File, namesFile: File): LinearResult {
     val (contacts, linearElapsedTimeMillis) = linearSearch(unsortedLines, names)
     val elapsedTimeMillis = readContactsTimeMillis + readNamesTimeMillis + linearElapsedTimeMillis
 
-    return LinearResult(contacts, elapsedTimeMillis)
+    return SearchResult(contacts, elapsedTimeMillis)
 }
 
 private fun jumpSearch(contactsFile: File, namesFile: File, maxTimeMillis: Long) {

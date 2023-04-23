@@ -7,4 +7,4 @@ $ Project: Phone Book (Kotlin)
  * Date: 23-04-23
  * Time: 14:42
  */
-data class LinearResult(val contacts: List<Contact>, override val elapsedTimeMillis: Long) : IResult
+data class SearchResult(val contacts: List<Contact>, override val elapsedTimeMillis: Long) : IResult
